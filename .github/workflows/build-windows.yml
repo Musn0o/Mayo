@@ -1,0 +1,71 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: [3.9, 3.10, 3.11]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+
+    - name: Create necessary directories
+      run: |
+        mkdir -p dist
+        mkdir -p build
+
+    - name: Build EXE with PyInstaller using spec file
+      run: |
+        pyinstaller main.spec
+
+    - name: Upload EXE as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Dental-Record-App-Windows-${{ matrix.python-version }}
+        path: dist/DentalRecordApp.exe
+
+  build-windows-single:
+    runs-on: windows-latest
+    name: Build with latest Python
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+
+    - name: Build EXE with PyInstaller using spec file
+      run: |
+        pyinstaller main.spec
+
+    - name: Upload EXE as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Dental-Record-App-Latest-Windows
+        path: dist/DentalRecordApp.exe
