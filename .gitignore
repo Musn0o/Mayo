@@ -26,7 +26,7 @@ wheels/
 
 # PyInstaller
 *.manifest
-*.spec
+# main.spec is tracked separately
 
 # Installer logs
 pip-log.txt
