@@ -19,76 +19,6 @@ from bidi.algorithm import get_display
 import os
 import sys
 
-# --- Arabic Font Setup ---
-# Try to find and register an Arabic font, with fallbacks
-ARABIC_FONT_NAME = "Helvetica"  # Default fallback
-
-# Look for the font file in the assets directory first (for bundled app)
-font_path = None
-# Try different possible font file names in the assets directory
-font_names = [
-    "NotoNaskhArabic-Regular.ttf",
-    "NotoNaskhArabic.ttf", 
-    "notonaskharabic.ttf",
-    "NotoSansArabic.ttf",
-    "notosansarabic.ttf"
-]
-
-for font_name in font_names:
-    try:
-        font_path = resource_path(os.path.join("assets", font_name))
-        if os.path.exists(font_path):
-            pdfmetrics.registerFont(TTFont("Arabic-Font", font_path))
-            ARABIC_FONT_NAME = "Arabic-Font"
-            print(f"Successfully registered Arabic font from: {font_path}")
-            break
-    except Exception as e:
-        print(f"Could not register Arabic font from assets/{font_name}: {e}")
-        continue
-
-if ARABIC_FONT_NAME == "Helvetica":
-    print(f"Arabic font file not found in assets directory among: {font_names}")
-
-if ARABIC_FONT_NAME == "Helvetica":
-    # Fallback to system font paths on different platforms
-    import platform
-    system = platform.system()
-    
-    # Try common paths for different operating systems
-    if system == "Windows":
-        font_paths = [
-            "C:/Windows/Fonts/notonaskharabic.ttf",
-            "C:/Windows/Fonts/NotoNaskhArabic-Regular.ttf",
-            "C:/Windows/Fonts/NotoSansArabic.ttf",
-            "C:/Windows/Fonts/NotoSansArabic-Regular.ttf"
-        ]
-    elif system == "Darwin":  # macOS
-        font_paths = [
-            "/System/Library/Fonts/Supplemental/NotoNaskh.ttc",
-            "/System/Library/Fonts/Supplemental/NotoSansArabic.ttc",
-            "/System/Library/Fonts/Supplemental/NotoSansArabicUI.ttc"
-        ]
-    else:  # Linux and others
-        font_paths = [
-            "/usr/share/fonts/truetype/noto/NotoNaskhArabic-Regular.ttf",
-            "/usr/share/fonts/truetype/noto/NotoSansArabic.ttf",
-            "/usr/share/fonts/TTF/NotoNaskhArabic-Regular.ttf"
-        ]
-    
-    for path in font_paths:
-        try:
-            if os.path.exists(path):
-                pdfmetrics.registerFont(TTFont("Arabic-Font", path))
-                ARABIC_FONT_NAME = "Arabic-Font"
-                print(f"Successfully registered Arabic font from: {path}")
-                break
-        except Exception as e:
-            print(f"Could not register Arabic font from {path}: {e}")
-            continue
-
-if ARABIC_FONT_NAME == "Helvetica":
-    print("Warning: Could not register the Arabic font. Falling back to Helvetica.")
-
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
@@ -98,6 +28,22 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, relative_path)
+
+# --- Arabic Font Setup ---
+ARABIC_FONT_NAME = "Helvetica"  # Default fallback
+try:
+    # Define the path to the font file within the assets directory
+    font_path = resource_path(os.path.join("assets", "NotoNaskhArabic-Regular.ttf"))
+    
+    # Register the font with reportlab
+    pdfmetrics.registerFont(TTFont("Arabic-Font", font_path))
+    
+    # Set the font name to be used in styles
+    ARABIC_FONT_NAME = "Arabic-Font"
+    print(f"Successfully registered Arabic font from: {font_path}")
+
+except Exception as e:
+    print(f"Warning: Could not register Arabic font. Falling back to Helvetica. Error: {e}")
 
 def _create_card_elements(record):
     elements = []
