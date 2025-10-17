@@ -10,7 +10,7 @@ block_cipher = None
 
 a = Analysis(
     ['run_app.py'],
-    pathex=[os.path.dirname(os.path.abspath(__file__))],
+    pathex=['.'],
     binaries=[],
     datas=[
         ('assets/logo.png', 'assets'),  # Include the logo file
