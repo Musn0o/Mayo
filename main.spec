@@ -13,7 +13,7 @@ a = Analysis(
     pathex=['.'],
     binaries=[],
     datas=[
-        ('assets/logo.png', 'assets'),  # Include the logo file
+        ('assets/', 'assets'),  # Include the entire assets folder
     ],
     hiddenimports=[
         'src.ui.gui',

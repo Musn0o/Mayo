@@ -77,11 +77,18 @@ def _create_card_elements(record):
     )
 
     # 1. Header
-    logo_path = resource_path("logo.png")
     try:
+        # Try different possible paths for the logo in the PyInstaller bundle
+        logo_path = resource_path(os.path.join("assets", "logo.png"))
         logo = Image(logo_path, width=0.5 * inch, height=0.5 * inch)
     except Exception:
-        logo = Paragraph(rtl_text("[LOGO]"), right_style)
+        try:
+            # Fallback to the old path for backward compatibility
+            logo_path = resource_path("logo.png")
+            logo = Image(logo_path, width=0.5 * inch, height=0.5 * inch)
+        except Exception:
+            # Final fallback to text
+            logo = Paragraph(rtl_text("[LOGO]"), right_style)
 
     header_text = rtl_text("بطاقة ولي امر الطالب")
     header_paragraph = Paragraph(header_text, header_style)
