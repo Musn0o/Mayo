@@ -13,7 +13,7 @@ A desktop application designed to help dental professionals in schools quickly c
 
 ## Downloads
 
-The easiest way to use this application is to download the latest pre-built executable (`.exe`) for Windows from the **[Releases](https://github.com/Musn0o/Mayo.git/releases)** page.
+The easiest way to use this application is to download the latest pre-built executable (`.exe`) for Windows from the **[Releases](https://github.com/Musn0o/Mayo/releases)** page.
 
 ## Getting Started (for Developers)
 
