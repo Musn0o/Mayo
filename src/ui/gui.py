@@ -32,15 +32,26 @@ except ImportError:
 class DentistApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Dental Student Record Automation (المدخلات السنية)")
-        self.setFixedWidth(600)
+        self.setWindowTitle("Dental Student Record Automation (تسجيل بيانات الطلاب)")
+        self.setStyleSheet("QWidget { font-size: 18pt; }")
         self.create_widgets()
+        self.showMaximized()
 
     def create_widgets(self):
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
         main_widget.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
         layout = QGridLayout(main_widget)
+
+        # Make the second column stretchable to make the input fields wider
+        layout.setColumnStretch(1, 1)
+
+        # Add row stretch to distribute vertical space
+        layout.setRowStretch(0, 1)
+        layout.setRowStretch(1, 1)
+        layout.setRowStretch(2, 1)
+        layout.setRowStretch(3, 1)
+        layout.setRowStretch(4, 1)
 
         self.school_entry = QLineEdit("أبو بكر الصديق")
         self.school_entry.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -88,11 +99,17 @@ class DentistApp(QMainWindow):
         self.view_button.clicked.connect(self.open_view_records_window)
         button_layout.addWidget(self.view_button, 0, 2)
 
+        # Add stretch to the button layout to make the buttons expand
+        button_layout.setColumnStretch(0, 1)
+        button_layout.setColumnStretch(1, 1)
+        button_layout.setColumnStretch(2, 1)
+
         layout.addWidget(button_frame, 4, 0, 1, 4)
 
     def handle_recording(self):
         self.record_button.setEnabled(False)
-        self.record_button.setText("...يرجى الانتظار / Calibrating...")
+        self.record_button.setText("جاري التسجيل / Recording")
+        self.record_button.setStyleSheet("background-color: yellow")
         QApplication.processEvents()
 
         name = transcribe_arabic_name()
@@ -104,6 +121,7 @@ class DentistApp(QMainWindow):
 
         self.record_button.setEnabled(True)
         self.record_button.setText("🎙️ سجل الاسم / Record Name")
+        self.record_button.setStyleSheet("background-color: lightgray")
 
     def save_current_record(self):
         student_name = self.name_entry.text().strip()

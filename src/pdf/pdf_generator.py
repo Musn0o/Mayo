@@ -19,8 +19,9 @@ from bidi.algorithm import get_display
 import os
 import sys
 
+
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
+    """Get absolute path to resource, works for dev and for PyInstaller"""
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
@@ -29,21 +30,25 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
+
 # --- Arabic Font Setup ---
 ARABIC_FONT_NAME = "Helvetica"  # Default fallback
 try:
     # Define the path to the font file within the assets directory
     font_path = resource_path(os.path.join("assets", "NotoNaskhArabic-Regular.ttf"))
-    
+
     # Register the font with reportlab
     pdfmetrics.registerFont(TTFont("Arabic-Font", font_path))
-    
+
     # Set the font name to be used in styles
     ARABIC_FONT_NAME = "Arabic-Font"
     print(f"Successfully registered Arabic font from: {font_path}")
 
 except Exception as e:
-    print(f"Warning: Could not register Arabic font. Falling back to Helvetica. Error: {e}")
+    print(
+        f"Warning: Could not register Arabic font. Falling back to Helvetica. Error: {e}"
+    )
+
 
 def _create_card_elements(record):
     elements = []
@@ -59,9 +64,9 @@ def _create_card_elements(record):
         reshaped_text = reshaper.reshape(text)
         bidi_text = get_display(reshaped_text)
         if isinstance(bidi_text, memoryview):
-            return bytes(bidi_text).decode('utf-8')
+            return bytes(bidi_text).decode("utf-8")
         elif isinstance(bidi_text, (bytes, bytearray)):
-            return bidi_text.decode('utf-8')
+            return bidi_text.decode("utf-8")
         return bidi_text
 
     # Styles
@@ -114,23 +119,47 @@ def _create_card_elements(record):
 
     # 2. Info
     line_spacing = 0.1 * inch
-    elements.append(Paragraph(rtl_text("المركز الصحي: الشهيد الدكتور سيف زكي"), right_style))
+    elements.append(
+        Paragraph(rtl_text("المركز الصحي: الشهيد الدكتور سيف زكي"), right_style)
+    )
     elements.append(Spacer(1, line_spacing))
-    elements.append(Paragraph(rtl_text(f"اسم المدرسة: {record.get('School_Name', '')}"), right_style))
+    elements.append(
+        Paragraph(
+            rtl_text(f"اسم المدرسة: {record.get('School_Name', '')}"), right_style
+        )
+    )
     elements.append(Spacer(1, line_spacing))
-    elements.append(Paragraph(rtl_text(f"اسم الطالب: {record.get('Student_Name', '')}"), right_style))
+    elements.append(
+        Paragraph(
+            rtl_text(f"اسم الطالب: {record.get('Student_Name', '')}"), right_style
+        )
+    )
     elements.append(Spacer(1, line_spacing))
-    elements.append(Paragraph(rtl_text(f"الفصل: {record.get('Class_No', '')}"), right_style))
+    elements.append(
+        Paragraph(rtl_text(f"الفصل: {record.get('Class_No', '')}"), right_style)
+    )
     elements.append(Spacer(1, line_spacing))
-    elements.append(Paragraph(rtl_text(f"الشعبة: {record.get('Department', '')}"), right_style))
+    elements.append(
+        Paragraph(rtl_text(f"الشعبة: {record.get('Department', '')}"), right_style)
+    )
     elements.append(Spacer(1, 0.25 * inch))
 
     # 3. Diagnosis intro
-    elements.append(Paragraph(rtl_text("بعد الفحص تبين وجود الاحتياجات التالية للعلاج :"), right_style))
+    elements.append(
+        Paragraph(
+            rtl_text("بعد الفحص تبين وجود الاحتياجات التالية للعلاج :"), right_style
+        )
+    )
     elements.append(Spacer(1, 0.1 * inch))
 
     # 4. Treatment options
-    treatment_options = ["قلع سن", "حشوات أسنان", "تطبيق فلورايد", "تنظيف أسنان", "أخرى"]
+    treatment_options = [
+        "قلع سن",
+        "حشوات أسنان",
+        "تطبيق فلورايد",
+        "تنظيف أسنان",
+        "أخرى",
+    ]
     record_diagnosis = record.get("Diagnosis", "")
 
     for option in treatment_options:
@@ -147,10 +176,13 @@ def _create_card_elements(record):
     note_heading = rtl_text("ملاحظة مهمة:")
     elements.append(Paragraph(f"<b><u>{note_heading}</u></b>", right_style))
     elements.append(Spacer(1, 0.05 * inch))
-    note_part1 = rtl_text("الرجاء مراجعة المركز الصحي بأسرع وقت لتلافي عدم معالجة الأسنان ،")
-    note_part2 = rtl_text("علما إن الفحص والعلاج مجاني طيلة أيام السنة")
+    note_part1 = rtl_text("الرجاء مراجعة المركز الصحي بأسرع وقت")
+    note_part2 = rtl_text("لتلافي عدم معالجة الأسنان")
+    note_part3 = rtl_text("علما إن الفحص والعلاج مجاني طيلة أيام السنة")
+
     elements.append(Paragraph(note_part1, right_style))
     elements.append(Paragraph(note_part2, right_style))
+    elements.append(Paragraph(note_part3, right_style))
 
     elements.append(Spacer(1, 0.25 * inch))
 
@@ -165,54 +197,59 @@ def _create_card_elements(record):
         Paragraph(school_stamp_line2, right_style),
     ]
 
-    footer_left_style = ParagraphStyle('FooterLeft', parent=right_style, alignment=TA_LEFT)
+    footer_left_style = ParagraphStyle(
+        "FooterLeft", parent=right_style, alignment=TA_LEFT
+    )
     health_center_stamp_elements = [
         Paragraph(health_center_stamp_line1, footer_left_style),
         Paragraph(health_center_stamp_line2, footer_left_style),
     ]
 
     footer_table = Table(
-        [[
-            health_center_stamp_elements,
-            school_stamp_elements
-        ]],
-        colWidths=[1.3 * inch, 1.3 * inch]
+        [[health_center_stamp_elements, school_stamp_elements]],
+        colWidths=[1.3 * inch, 1.3 * inch],
     )
-    footer_table.setStyle(TableStyle([('VALIGN', (0, 0), (-1, -1), 'TOP')]))
+    footer_table.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP")]))
     elements.append(footer_table)
 
     return elements
+
 
 def generate_notification_card(record, filename):
     doc = SimpleDocTemplate(filename, pagesize=A4)
     elements = _create_card_elements(record)
     doc.build(elements)
 
+
 def generate_combined_pdf(records, filename):
     doc = SimpleDocTemplate(filename, pagesize=landscape(A4))
 
     def chunks(lst, n):
         for i in range(0, len(lst), n):
-            yield lst[i:i + n]
+            yield lst[i : i + n]
 
     record_chunks = list(chunks(records, 3))
-    
+
     all_tables = []
     for chunk in record_chunks:
         row_data = []
         for record in chunk:
             card_elements = _create_card_elements(record)
             row_data.append(card_elements)
-        
+
         while len(row_data) < 3:
             row_data.append([])
 
-        table = Table([row_data], colWidths=[2.7*inch, 2.7*inch, 2.7*inch])
-        table.setStyle(TableStyle([
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('LINEAFTER', (0, 0), (-2, -1), 1, colors.grey),
-        ]))
+        table = Table([row_data], colWidths=[2.7 * inch, 2.7 * inch, 2.7 * inch])
+        table.setStyle(
+            TableStyle(
+                [
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("LINEAFTER", (0, 0), (-2, -1), 1, colors.grey),
+                ]
+            )
+        )
         all_tables.append(table)
-        all_tables.append(Spacer(1, 0.2*inch))
+        all_tables.append(Spacer(1, 0.2 * inch))
 
     doc.build(all_tables)

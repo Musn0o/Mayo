@@ -25,6 +25,11 @@ def get_next_record_id():
 
 def initialize_csv():
     """Checks if the CSV file exists and writes the header if it doesn't."""
+    # Ensure the database directory exists
+    db_directory = os.path.dirname(CSV_FILENAME)
+    if db_directory and not os.path.exists(db_directory):
+        os.makedirs(db_directory)
+
     if not os.path.exists(CSV_FILENAME):
         with open(CSV_FILENAME, mode="w", newline="", encoding="utf-8") as file:
             writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
