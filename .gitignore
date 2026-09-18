@@ -116,3 +116,14 @@ Thumbs.db
 student_records.csv
 dental_records_summary.pdf
 notification_card_*.pdf
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.kotlin/
+android/keystore.properties
+android/keystore/
+*.jks
+*.keystore
+android/dist/
