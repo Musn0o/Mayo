@@ -130,6 +130,13 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun clearAllRecords() {
+        viewModelScope.launch {
+            repository.clearAll()
+            showToast("تم مسح جميع السجلات")
+        }
+    }
+
     fun generateSingleCard(record: StudentRecord) {
         viewModelScope.launch {
             val file = PdfGenerator.generateSingleCardPdf(app, record)

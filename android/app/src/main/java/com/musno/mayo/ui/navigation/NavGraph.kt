@@ -81,6 +81,7 @@ fun MayoAppNavHost(
                 onPickCsv = { importLauncher.launch(arrayOf("*/*")) },
                 onGenerateSummary = viewModel::generateCombinedPdf,
                 onPrint = { PrintHelper.printRecords(context, records) },
+                onClearAll = viewModel::clearAllRecords,
             )
         }
     }

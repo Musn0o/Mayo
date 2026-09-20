@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.PostAdd
@@ -56,9 +57,11 @@ fun RecordsScreen(
     onPickCsv: () -> Unit,
     onGenerateSummary: () -> Unit,
     onPrint: () -> Unit,
+    onClearAll: () -> Unit,
 ) {
     var editingRecord by remember { mutableStateOf<StudentRecord?>(null) }
     var deletingRecord by remember { mutableStateOf<StudentRecord?>(null) }
+    var confirmingClearAll by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -76,6 +79,17 @@ fun RecordsScreen(
                             contentDescription = "رجوع",
                             tint = Color.White,
                         )
+                    }
+                },
+                actions = {
+                    if (records.isNotEmpty()) {
+                        IconButton(onClick = { confirmingClearAll = true }) {
+                            Icon(
+                                Icons.Filled.DeleteForever,
+                                contentDescription = "مسح جميع السجلات",
+                                tint = Color.White,
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -177,6 +191,29 @@ fun RecordsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { deletingRecord = null }) {
+                    Text("إلغاء")
+                }
+            },
+        )
+    }
+
+    if (confirmingClearAll) {
+        AlertDialog(
+            onDismissRequest = { confirmingClearAll = false },
+            title = { Text("مسح جميع السجلات") },
+            text = { Text("سيتم حذف جميع السجلات (${records.size}) نهائياً. هل أنت متأكد؟") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onClearAll()
+                        confirmingClearAll = false
+                    },
+                ) {
+                    Text("مسح الكل", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmingClearAll = false }) {
                     Text("إلغاء")
                 }
             },

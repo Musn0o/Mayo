@@ -35,6 +35,10 @@ class StudentRepository(context: Context) {
         dao.deleteById(id)
     }
 
+    suspend fun clearAll() {
+        dao.deleteAll()
+    }
+
     suspend fun getById(id: Long): StudentRecord? {
         return dao.getById(id)
     }
