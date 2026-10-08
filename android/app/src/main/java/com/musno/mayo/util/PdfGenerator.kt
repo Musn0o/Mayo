@@ -26,13 +26,34 @@ object PdfGenerator {
     const val A4_HEIGHT = 842f
     private const val MARGIN = 36f
 
+    const val DEFAULT_HEALTH_CENTER_NAME = "الشهيد الدكتور سيف زكي"
+    private const val SETTINGS_PREFS = "mayo_settings"
+    private const val KEY_HEALTH_CENTER_NAME = "health_center_name"
+
+    var healthCenterName: String = DEFAULT_HEALTH_CENTER_NAME
+        private set
+
     private var arabicTypeface: Typeface? = null
     private var logoBitmap: Bitmap? = null
 
     fun init(context: Context) {
         arabicTypeface = ResourcesCompat.getFont(context, R.font.noto_naskh_arabic_regular)
         logoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.ministry_of_health_iraq_logo)
+        healthCenterName = prefs(context)
+            .getString(KEY_HEALTH_CENTER_NAME, null)
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?: DEFAULT_HEALTH_CENTER_NAME
     }
+
+    fun setHealthCenterName(context: Context, name: String) {
+        val value = name.trim().ifEmpty { DEFAULT_HEALTH_CENTER_NAME }
+        healthCenterName = value
+        prefs(context).edit().putString(KEY_HEALTH_CENTER_NAME, value).apply()
+    }
+
+    private fun prefs(context: Context) =
+        context.getSharedPreferences(SETTINGS_PREFS, Context.MODE_PRIVATE)
 
     private fun textPaint(size: Float = 14f): TextPaint {
         return TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -130,7 +151,7 @@ object PdfGenerator {
 
         y += drawRtlText(
             canvas,
-            "المركز الصحي: الشهيد الدكتور سيف زكي",
+            "المركز الصحي: $healthCenterName",
             MARGIN,
             y,
             contentWidth,

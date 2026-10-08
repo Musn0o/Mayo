@@ -48,6 +48,9 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
     private val _lastCardFile = MutableStateFlow<java.io.File?>(null)
     val lastCardFile: StateFlow<java.io.File?> = _lastCardFile.asStateFlow()
 
+    private val _healthCenterName = MutableStateFlow(PdfGenerator.healthCenterName)
+    val healthCenterName: StateFlow<String> = _healthCenterName.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.allRecords.collect {
@@ -135,6 +138,12 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
             repository.clearAll()
             showToast("تم مسح جميع السجلات")
         }
+    }
+
+    fun setHealthCenterName(name: String) {
+        PdfGenerator.setHealthCenterName(app, name)
+        _healthCenterName.value = PdfGenerator.healthCenterName
+        showToast("تم حفظ اسم المركز الصحي")
     }
 
     fun generateSingleCard(record: StudentRecord) {

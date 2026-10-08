@@ -37,6 +37,7 @@ fun MayoAppNavHost(
     val records by viewModel.records.collectAsStateWithLifecycle()
     val isRecording by viewModel.isRecording.collectAsStateWithLifecycle()
     val toastMessage by viewModel.toastMessage.collectAsStateWithLifecycle()
+    val healthCenterName by viewModel.healthCenterName.collectAsStateWithLifecycle()
 
     val importLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -69,6 +70,8 @@ fun MayoAppNavHost(
                 onStartRecording = { viewModel.setRecording(true) },
                 onRecordingFinished = { viewModel.setRecording(false) },
                 onViewRecords = { navController.navigate(Routes.RECORDS) },
+                healthCenterName = healthCenterName,
+                onSaveHealthCenter = viewModel::setHealthCenterName,
             )
         }
         composable(Routes.RECORDS) {

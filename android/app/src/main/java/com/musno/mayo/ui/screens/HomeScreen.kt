@@ -22,7 +22,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +35,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -64,11 +67,15 @@ fun HomeScreen(
     onStartRecording: () -> Unit,
     onRecordingFinished: () -> Unit,
     onViewRecords: () -> Unit,
+    healthCenterName: String,
+    onSaveHealthCenter: (String) -> Unit,
 ) {
     val context = LocalContext.current
     var listeningState by remember { mutableStateOf(false) }
     var recordingError by remember { mutableStateOf<String?>(null) }
     var hasSetReady by remember { mutableStateOf(false) }
+    var showSettings by remember { mutableStateOf(false) }
+    var healthCenterInput by remember { mutableStateOf(healthCenterName) }
 
     fun startListening() {
         if (listeningState) return
@@ -139,6 +146,20 @@ fun HomeScreen(
                             "Dental Student Record",
                             color = Color.White.copy(alpha = 0.7f),
                             fontSize = 12.sp,
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            healthCenterInput = healthCenterName
+                            showSettings = true
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "الإعدادات",
+                            tint = Color.White,
                         )
                     }
                 },
@@ -310,5 +331,37 @@ fun HomeScreen(
                 Text("عرض السجلات")
             }
         }
+    }
+
+    if (showSettings) {
+        AlertDialog(
+            onDismissRequest = { showSettings = false },
+            title = { Text("الإعدادات") },
+            text = {
+                OutlinedTextField(
+                    value = healthCenterInput,
+                    onValueChange = { healthCenterInput = it },
+                    label = { Text("اسم المركز الصحي") },
+                    placeholder = { Text("الشهيد الدكتور سيف زكي") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onSaveHealthCenter(healthCenterInput)
+                        showSettings = false
+                    },
+                ) {
+                    Text("تطبيق")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSettings = false }) {
+                    Text("إلغاء")
+                }
+            },
+        )
     }
 }
